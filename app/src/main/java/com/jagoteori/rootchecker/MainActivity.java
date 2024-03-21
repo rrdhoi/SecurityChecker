@@ -26,12 +26,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-
-import io.nlopez.smartlocation.OnLocationUpdatedListener;
-import io.nlopez.smartlocation.SmartLocation;
-
 public class MainActivity extends AppCompatActivity implements LocationAssistant.Listener {
     LinearLayoutCompat linearLayout;
     LocationManager locationManager;
@@ -52,23 +46,9 @@ public class MainActivity extends AppCompatActivity implements LocationAssistant
         assistant = new LocationAssistant(this, this, LocationAssistant.Accuracy.HIGH, 5000, false);
         assistant.setVerbose(true);
 
-//        permissions.add(ACCESS_FINE_LOCATION);
-//        permissions.add(ACCESS_COARSE_LOCATION);
-//        permissionsToRequest = findUnAskedPermissions(permissions);
-//        Log.i("Permission", "onCreate: unasked permission" + permissions);
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//
-//
-//            if (permissionsToRequest.size() > 0)
-//                requestPermissions(permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
-//        }
-
         linearLayout = findViewById(R.id.linear_layout);
         TextView device = findViewById(R.id.creator);
         device.setText(getDeviceName());
-
-//        RootBeer rootBeer = new RootBeer(this);
 
         // TODO:: Initialization Security Checker
         SecurityChecker.init(this);
@@ -76,30 +56,14 @@ public class MainActivity extends AppCompatActivity implements LocationAssistant
         SecurityResult securityResult = securityChecker.performSecurityCheck(this);
 
         if (securityResult == SecurityResult.ON_ROOTED_DEVICE) {
-            resultCheckContent("is Rooted Device", true);
+            resultCheckContent("Rooted Device", true);
         } else if (securityResult == SecurityResult.ON_DEVELOPER_MODE) {
             resultCheckContent("Developer Mode On", true);
+        } else if (securityResult == SecurityResult.FAKE_GPS_APP_DETECTED) {
+            resultCheckContent("Fake GPS Detected", false);
+        } else {
+            resultCheckContent("All security", false);
         }
-
-//        resultCheckContent("Root Management Apps", rootBeer.detectRootManagementApps());
-//        resultCheckContent("Potentially Dangerous Apps", rootBeer.detectPotentiallyDangerousApps());
-//        resultCheckContent("Dangerous Props", rootBeer.checkForDangerousProps());
-//        resultCheckContent("Root Cloaking Apps", rootBeer.detectRootCloakingApps());
-//        resultCheckContent("TestKeys", rootBeer.detectTestKeys());
-//        resultCheckContent("For RW Path", rootBeer.checkForRWPaths());
-//        resultCheckContent("Root via Native Check", rootBeer.checkForRootNative());
-//        resultCheckContent("Magisk specific checks", rootBeer.checkForMagiskBinary());
-//        // ---
-//        resultCheckContent("Root Binary BusyBox Check", rootBeer.isRootedWithBusyBoxCheck());
-//        resultCheckContent("SU Binary Check", rootBeer.checkForSuBinary());
-//        resultCheckContent("2nd SU Binary Check", rootBeer.checkSuExists());
-
-//        boolean isDeveloperModeOn = Settings.Secure.getInt(this.getContentResolver(), Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) != 0;
-//        resultCheckContent("Developer Mode 2 Off", isDeveloperModeOn);
-//        boolean isADBEnabled = Settings.Secure.getInt(this.getContentResolver(), Settings.Global.ADB_ENABLED, 0) != 0;
-//        resultCheckContent("ADB Enabled", isADBEnabled);
-//        boolean isDebuggable = (0 != (getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
-//        resultCheckContent("Debuggable", isDebuggable);
 
         if (isLocationPermissionGranted()) {
             getLocation();
@@ -296,18 +260,6 @@ public class MainActivity extends AppCompatActivity implements LocationAssistant
             phrase.append(c);
         }
         return phrase.toString();
-    }
-
-    private ArrayList<String> findUnAskedPermissions(ArrayList<String> wanted) {
-        ArrayList<String> result = new ArrayList<String>();
-
-        for (String perm : wanted) {
-            if (!hasPermission(perm)) {
-                result.add(perm);
-            }
-        }
-
-        return result;
     }
 
     private boolean hasPermission(String permission) {
